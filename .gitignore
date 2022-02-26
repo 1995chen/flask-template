@@ -3,12 +3,15 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+logs/
+.DS_Store
 # C extensions
 *.so
 
 # Distribution / packaging
 .Python
 build/
+test/logs/
 develop-eggs/
 dist/
 downloads/
