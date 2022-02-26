@@ -17,8 +17,9 @@ ADD ./requirements.txt /opt/application/requirements.txt
 RUN pip3 install --timeout 100 --trusted-host mirrors.aliyun.com -i http://mirrors.aliyun.com/pypi/simple/ --no-cache-dir -r requirements.txt
 
 # 拷贝代码
-COPY ./* /opt/application/
+COPY ./ /opt/application/
 
 RUN mkdir -p /opt/application/logs
-HEALTHCHECK --interval=30s --timeout=5s --retries=4 CMD curl --fail http://localhost:$PORT/api/health || exit 1
-CMD ["bash", "-c", "service cron start; /usr/local/bin/supervisord -c /etc/supervisor/supervisord.conf"]
+#HEALTHCHECK --interval=30s --timeout=5s --retries=4 CMD curl --fail http://localhost:$PORT/api/health || exit 1
+#CMD ["bash", "-c", "service cron start; /usr/local/bin/supervisord -c /etc/supervisor/supervisord.conf"]
+CMD ["bash", "-c", "/usr/local/bin/supervisord -c /etc/supervisor/supervisord.conf"]

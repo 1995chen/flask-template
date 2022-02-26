@@ -1,0 +1,89 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-template
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-template
+  template:
+    metadata:
+      labels:
+        app: flask-template
+    spec:
+      containers:
+      - name: flask-service
+        env:
+        - name: RUNTIME_ENV
+          value: 'PROD'
+        - name: TZ
+          value: "Asia/Shanghai"
+        image: 1995chen/flask-template:latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - mountPath: /opt/application/logs
+          name: data
+          subPath: logs
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+            httpHeaders:
+            - name: LivenessProbe-Header
+              value: LivenessProbe
+          initialDelaySeconds: 5
+          periodSeconds: 3
+      restartPolicy: Always
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: data
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-template
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: flask-template
+  type: ClusterIP
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: flask-template.local.domain
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+  - host: flask-template.local.domain
+    http:
+      paths:
+      - backend:
+          serviceName: flask-template
+          servicePort: 80
+  tls:
+  - hosts:
+    - flask-template.local.domain
+    secretName: flask-template

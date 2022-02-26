@@ -48,6 +48,10 @@ jobs:
           name: Install requirements.txt
           command: |
             pip install -r requirements.txt
+      - run:
+          name: Run Tests
+          command: |
+            python -m unittest
       # 持久化root目录
       - persist_to_workspace:
           root: /root
