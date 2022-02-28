@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
 
 
-import inject
+import json
+import pkgutil
+import importlib
+from typing import List
+from types import ModuleType
 
+import inject
 import template_logging
 from celery.signals import task_postrun
 from celery import Celery
+from celery.schedules import crontab
 from kombu import Exchange, Queue
 
 from app.dependencies import Config
@@ -13,22 +19,50 @@ from app.dependencies import Config
 logger = template_logging.getLogger(__name__)
 
 
+class CrontabEncoder(json.JSONEncoder):
+    """
+    定义一个crontab的encoder
+    """
+
+    def default(self, obj):
+        if isinstance(obj, crontab):
+            return str(obj)
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
+
+
+def get_sub_modules(_modules: List[str]) -> List[str]:
+    """
+    获得模块下所有子模块列表
+    _modules: 待检索模块列表
+    """
+    _sub_modules: List[str] = list()
+    # 检索目录下所有模块
+    for _pkg in _modules:
+        _module: ModuleType = importlib.import_module(_pkg)
+        for _, _sub_module_name, _ in pkgutil.iter_modules(_module.__path__):
+            _sub_modules.append(f"{_pkg}.{_sub_module_name}")
+    return _sub_modules
+
+
 @inject.autoparams()
 def init_celery(config: Config):
-    task_root = 'app.tasks'
+    # 异步任务根目录
+    async_task_root: str = 'app.tasks.async_tasks'
+    # 定时任务根目录
+    schedule_task_root: str = 'app.tasks.schedule_tasks'
+
     _celery = Celery(
         config.PROJECT_NAME,
-        include=[
-            'app.tasks.test_task',
-            'app.tasks.schedule_task',
-        ]
+        include=get_sub_modules([async_task_root, schedule_task_root])
     )
+
     # 定时任务
     beat_schedule = {
-        'schedule_task.test_scheduler': {
-            'task': 'app.tasks.schedule_task.test_scheduler',
+        f'{schedule_task_root}.daily_do_task.test_scheduler': {
+            'task': f'{schedule_task_root}.daily_do_task.test_scheduler',
             'args': (),
-            'schedule': 5,
+            'schedule': 60,
             'options': {
                 # 该定时任务会被调度到这个队列
                 'queue': f'{config.PROJECT_NAME}-{config.RUNTIME_ENV}-beat-queue'
@@ -36,7 +70,11 @@ def init_celery(config: Config):
         },
     }
 
-    logger.info(f'Scheduled tasks: {beat_schedule}')
+    logger.info(
+        f'\n*********************************Scheduled tasks*********************************\n'
+        f'{json.dumps(beat_schedule, indent=4, cls=CrontabEncoder)}\n'
+        f'*********************************Scheduled tasks*********************************\n'
+    )
     _celery.conf.update(
         CELERYBEAT_SCHEDULE=beat_schedule,
         # 定义队列[如果需要额外的队列,定义在这里]
@@ -51,7 +89,7 @@ def init_celery(config: Config):
         # 定义路由[部分任务需要单独的队列处理用于提速,定义在这里]
         CELERY_ROUTES={
             # 该任务可以不用定义,这里定义作为Example
-            f'{task_root}.test_task.do_test': {
+            f'{async_task_root}.test_task.do_test': {
                 'queue': f'{config.PROJECT_NAME}-{config.RUNTIME_ENV}-queue',
                 'routing_key': f'{config.PROJECT_NAME}-routing'
             },
@@ -70,10 +108,15 @@ def init_celery(config: Config):
         CELERYD_TASK_TIME_LIMIT=300,
         CELERY_ACKS_LATE=True,
         CELERY_RESULT_PERSISTENT=False,
+        # 默认忽略结果, 需要保存结果的任务需要手动定义ignore_result=True
+        CELERY_IGNORE_RESULT=True,
         CELERY_TASK_RESULT_EXPIRES=86400,
-        CELERY_TASK_SERIALIZER='json',
-        CELERY_ACCEPT_CONTENT=['json'],
-        CELERY_RESULT_SERIALIZER='json',
+        # celery允许接收的数据格式
+        CELERY_ACCEPT_CONTENT=['pickle', 'json'],
+        # 异步任务的序列化器，也可以是json
+        CELERY_TASK_SERIALIZER='pickle',
+        # 任务结果的数据格式，也可以是json
+        CELERY_RESULT_SERIALIZER='pickle',
         CELERY_TIMEZONE='Asia/Shanghai',
         CELERY_ENABLE_UTC=True,
         BROKER_CONNECTION_TIMEOUT=10,

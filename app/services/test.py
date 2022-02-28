@@ -14,7 +14,7 @@ from template_transaction import CommitContext
 
 from app.models import Test
 from app.dependencies import MainDBSession
-from app.tasks.test_task import do_test
+from app.tasks.async_tasks.test_task import do_test
 
 logger = template_logging.getLogger(__name__)
 pagination: Pagination = inject.instance(Pagination)
