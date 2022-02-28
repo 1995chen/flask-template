@@ -21,6 +21,7 @@ from app.handlers.error_handler import global_error_handler
 
 from app.resources import (
     test,
+    user
 )
 
 logger = template_logging.getLogger(__name__)
@@ -80,6 +81,7 @@ def bind_api(app):
     # 注册路由表
     blueprints = (
         test.get_resources(),
+        user.get_resources(),
     )
     for bp in blueprints:
         app.register_blueprint(bp)
