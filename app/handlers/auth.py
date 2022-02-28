@@ -28,9 +28,9 @@ def user_define_validator_handler(user_info: Any, jwt_obj: Dict[str, Any]):
     if not jwt_obj or not jwt_obj.get('data') or not jwt_obj["data"].get('username'):
         raise AuthorizedFailException()
     # 校验数据的完整性
-    if not user_info or not user_info.get('status') or not user_info.get('username'):
+    if not user_info or not user_info.get('username'):
         raise UserInfoMissingException()
-    if user_info['status'] == 0 or user_info['username'] != jwt_obj["data"]["username"]:
+    if user_info['username'] != jwt_obj["data"]["username"]:
         raise NoOwnershipException()
 
 
