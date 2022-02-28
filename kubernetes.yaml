@@ -73,6 +73,8 @@ kind: Ingress
 metadata:
   name: flask-template.local.domain
   annotations:
+    # redirect 时token过长导致502
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
