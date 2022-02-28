@@ -23,6 +23,7 @@ def oauth2_sso_generate_token_info_handler(access_token_info: Dict[str, Any]) ->
     """
     logger.info(f"access_token_info is {access_token_info}")
     access_token: str = access_token_info['access_token']
+    refresh_token: str = access_token_info['refresh_token']
     user_info_bs64: str = access_token.split('.')[1]
     # 计算缺省的等号
     missing_padding = 4 - len(user_info_bs64) % 4
@@ -40,12 +41,18 @@ def oauth2_sso_generate_token_info_handler(access_token_info: Dict[str, Any]) ->
     now_ts = int(time.time())
     token_info: ITokenInfo = ITokenInfo(
         access_token=access_token,
-        expires_at=now_ts + access_token_info['expires_in'] - 300,
+        expires_at=now_ts + access_token_info['expires_in'] - 30,
+        refresh_token=refresh_token,
+        refresh_expires_at=now_ts + access_token_info['refresh_expires_in'] - 60,
+        token_type=access_token_info['token_type'],
+        user_id=user_info['sub'],
         username=user_info['preferred_username'],
         email=user_info['email'],
+        name=user_info['name'],
+        family_name=user_info['family_name'],
+        given_name=user_info['given_name'],
     )
     return token_info
-    pass
 
 
 def before_redirect_handler(args: Dict[str, str]) -> None:
