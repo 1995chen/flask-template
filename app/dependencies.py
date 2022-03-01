@@ -12,7 +12,6 @@ from dacite import from_dict
 from dacite.dataclasses import get_fields
 from inject import autoparams
 from redis import StrictRedis
-from pyapollos.apollo_client import ApolloClient
 from celery import Celery
 from sqlalchemy.orm import scoped_session, Session
 # from sentry_sdk.integrations.celery import CeleryIntegration
@@ -26,6 +25,7 @@ from template_rbac import OAuth2SSO, Auth
 from template_pagination import Pagination
 from template_migration import Migration
 from template_json_encoder import TemplateJSONEncoder
+from template_apollo import ApolloClient
 
 logger = template_logging.getLogger(__name__)
 
@@ -95,10 +95,6 @@ class MainDBSession(scoped_session, Session):
 
 
 class CacheRedis(StrictRedis):
-    pass
-
-
-class ApolloConfig(ApolloClient):
     pass
 
 
@@ -189,12 +185,16 @@ def init_pagination() -> Pagination:
     return pagination
 
 
-def init_apollo_client() -> ApolloConfig:
+def init_apollo_client() -> ApolloClient:
+    from app.handlers.apollo import config_changed_handler
+    
     # 获取阿波罗配置中心的环境变量
-    apollo_config: ApolloConfig = ApolloConfig(
+    apollo_config: ApolloClient = ApolloClient(
         app_id=Config.APOLLO_APP_ID,
         config_server_url=Config.APOLLO_CONFIG_SERVER_URL
     )
+    apollo_config.set_config_changed_handler(config_changed_handler)
+    apollo_config.start()
     return apollo_config
 
 
@@ -216,7 +216,7 @@ def init_redis_session(config: Config) -> CacheRedis:
 
 
 @autoparams()
-def bind_config(apollo_config: ApolloConfig):
+def bind_config(apollo_config: ApolloClient):
     _fields: List[Field] = get_fields(Config)
     config_dict: Dict[str, Any] = dict()
     for _field in _fields:
@@ -231,7 +231,7 @@ def bind_config(apollo_config: ApolloConfig):
 def bind(binder):
     from app.tasks import init_celery
     # 初始化阿波罗
-    binder.bind_to_constructor(ApolloConfig, init_apollo_client)
+    binder.bind_to_constructor(ApolloClient, init_apollo_client)
     # 初始化配置
     binder.bind_to_constructor(Config, bind_config)
     # 初始化celery

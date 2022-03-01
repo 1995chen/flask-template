@@ -3,13 +3,9 @@
 
 from typing import Optional, List, Any
 
-import inject
 import template_logging
 from template_pagination import IPagePaginationParam, IPaginationRes, ISortParam, ISortType
 
-from app.dependencies import Config
-
-config: Config = inject.instance(Config)
 logger = template_logging.getLogger(__name__)
 
 

@@ -11,9 +11,6 @@ import template_logging
 from template_rbac import ITokenInfo
 from template_exception import AuthorizedFailException
 
-from app.dependencies import Config
-
-config: Config = inject.instance(Config)
 logger = template_logging.getLogger(__name__)
 
 

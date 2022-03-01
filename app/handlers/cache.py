@@ -9,9 +9,8 @@ from types import FunctionType
 import inject
 import template_logging
 
-from app.dependencies import Config, CacheRedis
+from app.dependencies import CacheRedis
 
-config: Config = inject.instance(Config)
 logger = template_logging.getLogger(__name__)
 redis_cache: CacheRedis = inject.instance(CacheRedis)
 

@@ -1,4 +1,4 @@
-FROM 1995chen/python:3.6.8-398847f
+FROM 1995chen/python:3.6.8-8fe14ac
 MAINTAINER liang.chen
 
 # 拷贝配置文件

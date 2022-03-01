@@ -9,11 +9,9 @@ import requests
 import template_logging
 from template_rbac import OAuth2SSO
 
-from app.dependencies import Config
 from app.constants.auth import Role
 from app.exceptions import NoOwnershipException, AuthorizedFailException, UserInfoMissingException
 
-config: Config = inject.instance(Config)
 logger = template_logging.getLogger(__name__)
 
 
