@@ -11,10 +11,10 @@ import template_logging
 from template_babel import get_text as _
 
 from app.resources import Api
-from app.dependencies import Auth
+from app.dependencies import Auth, Config
 from app.constants.auth import Role
 from app.constants.code_map import CODE_MAP
-from app.services.test import test_db, TestDbBO
+from app.services.test import test_db, TestDbBO, test_get_config
 from app.schemas.test import TestSchema
 
 logger = template_logging.getLogger(__name__)
@@ -67,10 +67,21 @@ class TestPagination(Resource):
         return test_db(TestDbBO(**args))
 
 
+class TestConfig(Resource):
+    common_parser = reqparse.RequestParser()
+
+    def get(self) -> Config:
+        parser = self.common_parser.copy()
+        args = parser.parse_args()
+        logger.info(f"get args: {args}")
+        return test_get_config()
+
+
 def get_resources():
     blueprint = Blueprint('Test', __name__)
     api = Api(blueprint)
     api.add_resource(Test, '/use_auth')
     api.add_resource(TestNoAuth, '/use_no_auth')
     api.add_resource(TestPagination, '/use_pagination')
+    api.add_resource(TestConfig, '/use_config')
     return blueprint

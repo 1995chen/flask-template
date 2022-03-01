@@ -13,12 +13,13 @@ from template_rbac import Auth, AuthStore
 from template_transaction import CommitContext
 
 from app.models import Test
-from app.dependencies import MainDBSession
+from app.dependencies import MainDBSession, Config
 from app.tasks.async_tasks.test_task import do_test
 
 logger = template_logging.getLogger(__name__)
 pagination: Pagination = inject.instance(Pagination)
 cache: Cache = inject.instance(Cache)
+config: Config = inject.instance(Config)
 
 """
 Service 中不应该出现Schema
@@ -53,3 +54,7 @@ def test_db(bo: TestDbBO) -> Query:
     with CommitContext(session):
         query: Query = session.query(Test)
         return query
+
+
+def test_get_config() -> Config:
+    return config
