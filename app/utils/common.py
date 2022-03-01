@@ -13,7 +13,6 @@ from template_json_encoder import TemplateJSONEncoder
 from app.models.base import Base
 from app.dependencies import Config
 
-config: Config = inject.instance(Config)
 json_encoder: TemplateJSONEncoder = inject.instance(TemplateJSONEncoder)
 logger = template_logging.getLogger(__name__)
 
@@ -39,6 +38,7 @@ def generate_table() -> None:
     创建表
     :return:
     """
+    config: Config = inject.instance(Config)
     # 导入待新建的表
     importlib.import_module('app.models')
     Base.metadata.create_all(bind=create_engine(config.SQLALCHEMY_DATABASE_URI))
@@ -49,4 +49,5 @@ def print_config():
     """
     打印配置
     """
+    config: Config = inject.instance(Config)
     logger.info(f"app config is {json.dumps(config, default=json_encoder.default, indent=4)}")

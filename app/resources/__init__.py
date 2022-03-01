@@ -22,11 +22,11 @@ from app.constants.code_map import CODE_MAP
 from app.exceptions.client import ParamsInvalidException
 
 logger = template_logging.getLogger(__name__)
-config: Config = inject.instance(Config)
 
 
 class Api(flask_restful.Api):
     def __init__(self, app=None):
+        config: Config = inject.instance(Config)
         prefix: str = urljoin(
             urljoin(f"{config.API_PREFIX}/", 'v1/'),
             name_convert_to_snake(app.name)

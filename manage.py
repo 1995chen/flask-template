@@ -14,12 +14,9 @@ from template_migration import Migration
 from app.dependencies import Config, CacheRedis
 from app.utils.common import generate_table, print_config
 
-# 获取配置
-config: Config = inject.instance(Config)
 # 加载日志模块
 template_logging: Any = importlib.import_module('template_logging')
-# 获取redis
-redis_cache: CacheRedis = inject.instance(CacheRedis)
+
 # 初始化日志
 template_logging.init_logger()
 # 获取Logger
@@ -32,8 +29,12 @@ def cli():
     # 生成数据库表
     generate_table()
     print_config()
+    # 获取配置
+    config: Config = inject.instance(Config)
     # 加🔒, 执行migrate脚本,只执行一次
     lock_key: str = f"migrate-lock:{config.PROJECT_NAME}-{config.RUNTIME_ENV}"
+    # 获取redis
+    redis_cache: CacheRedis = inject.instance(CacheRedis)
     lock = Lock(redis_cache, lock_key)
     if lock.acquire(blocking=True):
         try:
@@ -107,6 +108,8 @@ def run_beat_worker():
     """
     该worker仅消费默认定时任务队列消息
     """
+    # 获取配置
+    config: Config = inject.instance(Config)
     celery_app = inject.instance(Celery)
     celery_app.start(
         argv=['celery', 'worker', '-l', 'INFO', '-n',
@@ -123,6 +126,8 @@ def run_custom_worker():
     执行业务中异步任务
     该worker仅消费默认队列消息
     """
+    # 获取配置
+    config: Config = inject.instance(Config)
     celery_app = inject.instance(Celery)
     celery_app.start(
         argv=['celery', 'worker', '-l', 'INFO', '-n',

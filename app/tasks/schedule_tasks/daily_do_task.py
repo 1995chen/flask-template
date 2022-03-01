@@ -5,10 +5,7 @@ import inject
 import template_logging
 from celery import Celery
 
-from app.dependencies import Config
-
 logger = template_logging.getLogger(__name__)
-config: Config = inject.instance(Config)
 celery_app: Celery = inject.instance(Celery)
 
 

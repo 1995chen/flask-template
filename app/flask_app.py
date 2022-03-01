@@ -25,7 +25,7 @@ from app.resources import (
 )
 
 logger = template_logging.getLogger(__name__)
-config: Config = inject.instance(Config)
+
 # 获得auth
 auth: Auth = inject.instance(Auth)
 babel_cfg: TemplateBabel = inject.instance(TemplateBabel)
@@ -63,6 +63,7 @@ def bind_app_hook(app):
 
     @app.teardown_request
     def flask_teardown(_exception):
+        config: Config = inject.instance(Config)
         # [静态文件]跳过
         if not request.path.startswith(config.API_PREFIX):
             return
