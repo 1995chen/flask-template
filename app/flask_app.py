@@ -21,7 +21,8 @@ from app.handlers.error_handler import global_error_handler
 
 from app.resources import (
     test,
-    user
+    user,
+    config
 )
 
 logger = template_logging.getLogger(__name__)
@@ -63,9 +64,9 @@ def bind_app_hook(app):
 
     @app.teardown_request
     def flask_teardown(_exception):
-        config: Config = inject.instance(Config)
+        config_instance: Config = inject.instance(Config)
         # [静态文件]跳过
-        if not request.path.startswith(config.API_PREFIX):
+        if not request.path.startswith(config_instance.API_PREFIX):
             return
         del _exception
         inject.instance(MainDBSession).remove()
@@ -83,6 +84,7 @@ def bind_api(app):
     blueprints = (
         test.get_resources(),
         user.get_resources(),
+        config.get_resources(),
     )
     for bp in blueprints:
         app.register_blueprint(bp)

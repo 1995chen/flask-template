@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
-# import logging
 import os
 from typing import Dict, Any, List
 from dataclasses import dataclass, Field
 
-# import sentry_sdk
 import template_logging
 from dacite import from_dict
 from dacite.dataclasses import get_fields
@@ -14,11 +12,6 @@ from inject import autoparams
 from redis import StrictRedis
 from celery import Celery
 from sqlalchemy.orm import scoped_session, Session
-# from sentry_sdk.integrations.celery import CeleryIntegration
-# from sentry_sdk.integrations.flask import FlaskIntegration
-# from sentry_sdk.integrations.logging import ignore_logger
-# from sentry_sdk.integrations.logging import LoggingIntegration
-# from sentry_sdk.integrations.redis import RedisIntegration
 from template_cache import Cache
 from template_babel.babel import TemplateBabel
 from template_rbac import OAuth2SSO, Auth
@@ -30,22 +23,11 @@ from template_apollo import ApolloClient
 logger = template_logging.getLogger(__name__)
 
 
-# # 接入sentry
-# setry_logging = LoggingIntegration(level=logging.ERROR, event_level=logging.ERROR)
-# # oss api 默认日志
-# ignore_logger('oss2.api')
-# sentry_sdk.init(
-#     dsn="https://51bb1c8be1064b119cb853a4f5b4399b@eetm-sentry.templateos.com/8",
-#     environment=os.getenv('RUNTIME_ENV') or 'DEV',
-#     integrations=[FlaskIntegration(), CeleryIntegration(), RedisIntegration(), setry_logging],
-#     traces_sample_rate=1.0,
-#     send_default_pii=True,
-#     attach_stacktrace=True
-# )
-
-
 @dataclass
 class Config:
+    PORT: int = os.getenv('PORT', 8080)
+    # 服务内部调用UUID
+    INNER_CALL_UID: str = '5687f73a-9a0d-11ec-9454-1e00621ab048'
     # 项目名称
     PROJECT_NAME: str = 'flask_template'
     # 项目路径
@@ -187,7 +169,7 @@ def init_pagination() -> Pagination:
 
 def init_apollo_client() -> ApolloClient:
     from app.handlers.apollo import config_changed_handler
-    
+
     # 获取阿波罗配置中心的环境变量
     apollo_config: ApolloClient = ApolloClient(
         app_id=Config.APOLLO_APP_ID,

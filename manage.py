@@ -36,7 +36,7 @@ def cli():
     # 获取redis
     redis_cache: CacheRedis = inject.instance(CacheRedis)
     lock = Lock(redis_cache, lock_key)
-    if lock.acquire(blocking=True):
+    if lock.acquire(blocking=True, timeout=1800):
         try:
             migration_instance: Migration = inject.instance(Migration)
             migration_instance.do_migrate()
