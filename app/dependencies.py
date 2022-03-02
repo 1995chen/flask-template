@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
+import sys
 import os
 from typing import Dict, Any, List
-from dataclasses import dataclass, Field
+from dataclasses import dataclass, Field, field
 
 import template_logging
 from dacite import from_dict
@@ -20,12 +21,15 @@ from template_migration import Migration
 from template_json_encoder import TemplateJSONEncoder
 from template_apollo import ApolloClient
 
+from app.constants.enum import SysCMD
+
 logger = template_logging.getLogger(__name__)
 
 
 @dataclass
 class Config:
     PORT: int = os.getenv('PORT', 8080)
+    CMD: SysCMD = field(default_factory=lambda: SysCMD[sys.argv[1].replace('-', '_').upper()])
     # 服务内部调用UUID
     INNER_CALL_UID: str = '5687f73a-9a0d-11ec-9454-1e00621ab048'
     # 项目名称
@@ -176,7 +180,6 @@ def init_apollo_client() -> ApolloClient:
         config_server_url=Config.APOLLO_CONFIG_SERVER_URL
     )
     apollo_config.set_config_changed_handler(config_changed_handler)
-    apollo_config.start()
     return apollo_config
 
 

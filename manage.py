@@ -10,8 +10,10 @@ import inject
 from redis_lock import Lock
 from celery import Celery
 from template_migration import Migration
+from template_apollo import ApolloClient
 
 from app.dependencies import Config, CacheRedis
+from app.constants.enum import SysCMD
 from app.utils.common import generate_table, print_config
 
 # 加载日志模块
@@ -31,6 +33,13 @@ def cli():
     print_config()
     # 获取配置
     config: Config = inject.instance(Config)
+    # 启动apollo后台监听线程
+    if config.CMD in (
+            SysCMD.RUN_API_SERVER, SysCMD.RUN_TEST_SERVER, SysCMD.RUN_BEAT,
+            SysCMD.RUN_BEAT_WORKER, SysCMD.RUN_CUSTOM_WORKER
+    ):
+        apollo_client: ApolloClient = inject.instance(ApolloClient)
+        apollo_client.start()
     # 加🔒, 执行migrate脚本,只执行一次
     lock_key: str = f"migrate-lock:{config.PROJECT_NAME}-{config.RUNTIME_ENV}"
     # 获取redis
@@ -78,6 +87,8 @@ def run_api_server():
         'worker_connections': 4000,
         'capture_output': True,
         'reload': False,
+        # 使用默认的worker类型
+        'worker_class': 'gthread',
     })
 
 

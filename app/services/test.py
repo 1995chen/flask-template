@@ -13,7 +13,7 @@ from template_rbac import Auth, AuthStore
 from template_transaction import CommitContext
 
 from app.models import Test
-from app.dependencies import MainDBSession, Config
+from app.dependencies import MainDBSession
 from app.tasks.async_tasks.test_task import do_test
 
 logger = template_logging.getLogger(__name__)
@@ -53,8 +53,3 @@ def test_db(bo: TestDbBO) -> Query:
     with CommitContext(session):
         query: Query = session.query(Test)
         return query
-
-
-def test_get_config() -> Config:
-    config: Config = inject.instance(Config)
-    return config

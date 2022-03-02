@@ -9,7 +9,7 @@ from types import ModuleType
 
 import inject
 import template_logging
-from celery.signals import task_postrun
+from celery.signals import task_postrun, task_prerun
 from celery import Celery
 from celery.schedules import crontab
 from kombu import Exchange, Queue
@@ -133,8 +133,13 @@ def init_celery(config: Config):
     return _celery
 
 
+@task_prerun.connect()
+def task_prerun_handler(task_id, task, *args, **kwargs):
+    config: Config = inject.instance(Config)
+    logger.info(f'task_prerun_handler, config is {config}')
+
+
 @task_postrun.connect()
 def task_postrun_handler(*args, **kwargs):
     from app.dependencies import MainDBSession
-    del args, kwargs
     inject.instance(MainDBSession).remove()
