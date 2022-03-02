@@ -4,13 +4,13 @@
 import json
 from typing import Dict, Any
 
-import inject
 import requests
 import template_logging
 from template_rbac import OAuth2SSO
 
 from app.constants.auth import Role
 from app.exceptions import NoOwnershipException, AuthorizedFailException, UserInfoMissingException
+from app.dependencies import inject
 
 logger = template_logging.getLogger(__name__)
 

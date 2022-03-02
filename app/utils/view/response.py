@@ -6,11 +6,11 @@ import json
 import mimetypes
 from typing import Optional, Any, Dict
 
-import inject
 from flask import Response, make_response, jsonify
 from template_rbac import AuthStore, Auth
 
 from app.constants.code_map import CODE_MAP
+from app.dependencies import inject
 
 __all__ = [
     'success',

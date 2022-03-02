@@ -3,7 +3,6 @@
 
 from typing import Optional
 
-import inject
 import template_logging
 from template_cache import Cache
 from dataclasses import dataclass
@@ -13,7 +12,7 @@ from template_rbac import Auth, AuthStore
 from template_transaction import CommitContext
 
 from app.models import Test
-from app.dependencies import MainDBSession, Config
+from app.dependencies import MainDBSession, Config, inject
 from app.tasks.async_tasks.test_task import do_test
 
 logger = template_logging.getLogger(__name__)
@@ -57,4 +56,5 @@ def test_db(bo: TestDbBO) -> Query:
 
 def test_get_config() -> Config:
     config: Config = inject.instance(Config)
+    logger.error(f"test_get_config.config-{id(config)} is {config}")
     return config

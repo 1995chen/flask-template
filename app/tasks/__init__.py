@@ -7,14 +7,13 @@ import importlib
 from typing import List
 from types import ModuleType
 
-import inject
 import template_logging
 from celery.signals import task_postrun
 from celery import Celery
 from celery.schedules import crontab
 from kombu import Exchange, Queue
 
-from app.dependencies import Config
+from app.dependencies import Config, inject
 
 logger = template_logging.getLogger(__name__)
 

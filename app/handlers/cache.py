@@ -6,10 +6,9 @@ import pickle
 from typing import Any, Optional
 from types import FunctionType
 
-import inject
 import template_logging
 
-from app.dependencies import CacheRedis
+from app.dependencies import CacheRedis, inject
 
 logger = template_logging.getLogger(__name__)
 redis_cache: CacheRedis = inject.instance(CacheRedis)

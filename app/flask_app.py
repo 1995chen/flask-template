@@ -3,7 +3,6 @@
 
 from typing import Optional, Tuple
 
-import inject
 from flask import Flask, request
 from flask_compress import Compress
 
@@ -13,7 +12,7 @@ from template_babel import TemplateBabel
 from template_pagination import Pagination
 from template_json_encoder import TemplateJSONEncoder
 
-from app.dependencies import MainDBSession, Config
+from app.dependencies import MainDBSession, Config, inject
 from app.utils.view.default import default_serve
 from app.utils.view.response import simple_response
 from app.utils.view.language import get_language

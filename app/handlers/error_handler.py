@@ -6,7 +6,6 @@ import json
 from typing import Optional
 from dataclasses import dataclass, asdict
 
-import inject
 import template_logging
 import template_exception
 from flask import Request, Response
@@ -18,7 +17,7 @@ from template_babel import get_text as _
 
 from app.constants.code_map import CODE_MAP
 from app.exceptions import ParamsInvalidException, ServerException, ClientException
-from app.dependencies import MainDBSession
+from app.dependencies import MainDBSession, inject
 from app.utils.view import response
 
 logger = template_logging.getLogger(__name__)

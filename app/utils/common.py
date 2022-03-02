@@ -5,13 +5,12 @@ import re
 import importlib
 import json
 
-import inject
 import template_logging
 from sqlalchemy import create_engine
 from template_json_encoder import TemplateJSONEncoder
 
 from app.models.base import Base
-from app.dependencies import Config
+from app.dependencies import Config, inject
 
 json_encoder: TemplateJSONEncoder = inject.instance(TemplateJSONEncoder)
 logger = template_logging.getLogger(__name__)

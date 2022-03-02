@@ -3,7 +3,6 @@
 
 from typing import Dict, Any
 
-import inject
 from flask import Blueprint
 from flask_restful import Resource, reqparse
 
@@ -11,7 +10,7 @@ import template_logging
 from template_babel import get_text as _
 
 from app.resources import Api
-from app.dependencies import Auth, Config
+from app.dependencies import Auth, Config, inject
 from app.constants.auth import Role
 from app.constants.code_map import CODE_MAP
 from app.services.test import test_db, TestDbBO, test_get_config

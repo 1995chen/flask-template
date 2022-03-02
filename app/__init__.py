@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
-import inject
 import template_logging
 
-from app import dependencies
+from app.dependencies import bind, inject
 
 logger = template_logging.getLogger(__name__)
 

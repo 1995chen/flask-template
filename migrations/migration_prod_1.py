@@ -2,12 +2,11 @@
 
 
 import os
-import inject
 
 import template_logging
 from template_transaction import CommitContext
 
-from app.dependencies import MainDBSession
+from app.dependencies import MainDBSession, inject
 
 logger = template_logging.getLogger(__name__)
 

@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 
 
-import inject
 import template_logging
 from flask import Blueprint
 from flask_restful import Resource, reqparse
 from template_rbac import AuthStore
 
 from app.resources import Api
-from app.dependencies import Auth
+from app.dependencies import Auth, inject
 from app.schemas.test import TestSchema
 
 logger = template_logging.getLogger(__name__)

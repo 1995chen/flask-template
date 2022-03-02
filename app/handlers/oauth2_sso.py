@@ -6,10 +6,11 @@ import json
 import base64
 from typing import Dict, Any
 
-import inject
 import template_logging
 from template_rbac import ITokenInfo
 from template_exception import AuthorizedFailException
+
+from app.dependencies import inject
 
 logger = template_logging.getLogger(__name__)
 

@@ -3,6 +3,7 @@
 
 # import logging
 import os
+import importlib
 from typing import Dict, Any, List
 from dataclasses import dataclass, Field
 
@@ -10,7 +11,7 @@ from dataclasses import dataclass, Field
 import template_logging
 from dacite import from_dict
 from dacite.dataclasses import get_fields
-from inject import autoparams
+# from inject import autoparams
 from redis import StrictRedis
 from celery import Celery
 from sqlalchemy.orm import scoped_session, Session
@@ -27,6 +28,7 @@ from template_migration import Migration
 from template_json_encoder import TemplateJSONEncoder
 from template_apollo import ApolloClient
 
+inject: Any = importlib.import_module('inject')
 logger = template_logging.getLogger(__name__)
 
 
@@ -98,7 +100,7 @@ class CacheRedis(StrictRedis):
     pass
 
 
-@autoparams()
+@inject.autoparams()
 def init_oauth2_sso(config: Config) -> OAuth2SSO:
     # 初始化
     oauth2_sso_instance: OAuth2SSO = OAuth2SSO(
@@ -130,7 +132,7 @@ def init_oauth2_sso(config: Config) -> OAuth2SSO:
     return oauth2_sso_instance
 
 
-@autoparams()
+@inject.autoparams()
 def init_auth(config: Config) -> Auth:
     # 初始化
     auth: Auth = Auth(config.JWT_SECRET_KEY, not config.IS_DEV)
@@ -142,7 +144,7 @@ def init_auth(config: Config) -> Auth:
     return auth
 
 
-@autoparams()
+@inject.autoparams()
 def init_cache(_config: Config) -> Cache:
     from app.handlers.cache import get_cache_handler, store_cache_handler, generate_cache_key_handler
     # 初始化
@@ -154,7 +156,7 @@ def init_cache(_config: Config) -> Cache:
     return cache_instance
 
 
-@autoparams()
+@inject.autoparams()
 def init_migrate(_config: Config) -> Migration:
     from app.handlers.migrate import init_data_handler
     # 初始化
@@ -187,7 +189,7 @@ def init_pagination() -> Pagination:
 
 def init_apollo_client() -> ApolloClient:
     from app.handlers.apollo import config_changed_handler
-    
+
     # 获取阿波罗配置中心的环境变量
     apollo_config: ApolloClient = ApolloClient(
         app_id=Config.APOLLO_APP_ID,
@@ -198,7 +200,7 @@ def init_apollo_client() -> ApolloClient:
     return apollo_config
 
 
-@autoparams()
+@inject.autoparams()
 def init_main_db_session(config: Config):
     from sqlalchemy import create_engine
     from sqlalchemy.orm import (
@@ -209,13 +211,13 @@ def init_main_db_session(config: Config):
     return scoped_session(sessionmaker(engine))
 
 
-@autoparams()
+@inject.autoparams()
 def init_redis_session(config: Config) -> CacheRedis:
     r: CacheRedis = StrictRedis.from_url(config.REDIS_URL)
     return r
 
 
-@autoparams()
+@inject.autoparams()
 def bind_config(apollo_config: ApolloClient):
     _fields: List[Field] = get_fields(Config)
     config_dict: Dict[str, Any] = dict()
@@ -225,6 +227,7 @@ def bind_config(apollo_config: ApolloClient):
             # 类型转换
             config_dict[_field.name] = _field.type(_v)
     _config = from_dict(Config, config_dict)
+    logger.info(f"bind_config._config is {_config}")
     return _config
 
 

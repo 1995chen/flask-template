@@ -6,12 +6,11 @@ import importlib
 from typing import Any
 
 import click
-import inject
 from redis_lock import Lock
 from celery import Celery
 from template_migration import Migration
 
-from app.dependencies import Config, CacheRedis
+from app.dependencies import Config, CacheRedis, inject
 from app.utils.common import generate_table, print_config
 
 # 加载日志模块

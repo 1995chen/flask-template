@@ -3,10 +3,9 @@
 
 import os
 
-import inject
 from flask import send_from_directory
 
-from app.dependencies import Config
+from app.dependencies import Config, inject
 from app.utils.view.response import page_not_found
 
 

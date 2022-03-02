@@ -6,8 +6,6 @@ import time
 from functools import wraps
 from urllib.parse import urljoin
 
-import inject
-
 import flask
 import flask_restful
 from werkzeug.wrappers import Response as ResponseBase
@@ -16,7 +14,7 @@ from marshmallow.exceptions import ValidationError
 import template_logging
 from template_rbac import AuthStore, Auth
 
-from app.dependencies import Config
+from app.dependencies import Config, inject
 from app.utils.common import name_convert_to_snake
 from app.constants.code_map import CODE_MAP
 from app.exceptions.client import ParamsInvalidException
