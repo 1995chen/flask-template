@@ -1,4 +1,4 @@
-FROM 1995chen/python:3.6.8-0d270ea
+FROM 1995chen/python:3.6.8-538629f
 MAINTAINER liang.chen
 
 # 拷贝配置文件
@@ -20,6 +20,4 @@ RUN pip3 install --timeout 100 --trusted-host mirrors.aliyun.com -i http://mirro
 COPY ./ /opt/application/
 
 RUN mkdir -p /opt/application/logs
-#HEALTHCHECK --interval=30s --timeout=5s --retries=4 CMD curl --fail http://localhost:$PORT/api/health || exit 1
-#CMD ["bash", "-c", "service cron start; /usr/local/bin/supervisord -c /etc/supervisor/supervisord.conf"]
 CMD ["bash", "-c", "/usr/local/bin/supervisord -c /etc/supervisor/supervisord.conf"]

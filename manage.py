@@ -89,6 +89,7 @@ def run_api_server():
         'reload': False,
         # 使用默认的worker类型
         'worker_class': 'gthread',
+        'limit_request_line': 8000,
     })
 
 
