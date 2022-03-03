@@ -115,7 +115,7 @@ def bind_app_health_check_endpoint(app):
         })
 
 
-def create_app():
+def create_app() -> Flask:
     app = Flask(__name__)
     Compress(app)
 
@@ -130,4 +130,4 @@ def create_app():
     return app
 
 
-flask_app = create_app()
+flask_app: Flask = create_app()

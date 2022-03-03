@@ -201,7 +201,7 @@ def init_redis_session(config: Config) -> CacheRedis:
 
 
 @autoparams()
-def bind_config(apollo_config: ApolloClient):
+def bind_config(apollo_config: ApolloClient) -> Config:
     _fields: List[Field] = get_fields(Config)
     config_dict: Dict[str, Any] = dict()
     for _field in _fields:
