@@ -82,8 +82,18 @@ def init_celery(config: Config):
             # 该默认队列可以不用定义,这里定义作为Example
             Queue(
                 f'{config.PROJECT_NAME}-{config.RUNTIME_ENV}-queue',
-                Exchange(f'{config.PROJECT_NAME}-{config.RUNTIME_ENV}-exchange'),
-                routing_key=f'{config.PROJECT_NAME}-routing'
+                Exchange(f'{config.PROJECT_NAME}-{config.RUNTIME_ENV}-exchange', durable=True, delivery_mode=2),
+                routing_key=f'{config.PROJECT_NAME}-routing',
+                # 队列持久化
+                durable=True
+            ),
+            # 定义定时任务队列
+            Queue(
+                f'{config.PROJECT_NAME}-{config.RUNTIME_ENV}-beat-queue',
+                Exchange(f'{config.PROJECT_NAME}-{config.RUNTIME_ENV}-exchange', durable=True, delivery_mode=2),
+                routing_key=f'{config.PROJECT_NAME}-beat-routing',
+                # 队列持久化
+                durable=True
             ),
         ],
         # 定义路由[部分任务需要单独的队列处理用于提速,定义在这里]
@@ -101,6 +111,8 @@ def init_celery(config: Config):
         # 默认路由
         CELERY_DEFAULT_ROUTING_KEY=f'{config.PROJECT_NAME}-{config.RUNTIME_ENV}-routing',
         CELERY_DEFAULT_EXCHANGE_TYPE='direct',
+        # 任务持久化
+        CELERY_DEFAULT_DELIVERY_MODE="persistent",
 
         BROKER_URL=config.CELERY_BROKER,
         CELERY_RESULT_BACKEND=config.CELERY_BACKEND,
