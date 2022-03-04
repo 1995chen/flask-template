@@ -10,7 +10,7 @@ import template_logging
 from template_rbac import OAuth2SSO
 
 from app.constants.auth import Role
-from app.exceptions import NoOwnershipException, AuthorizedFailException, UserInfoMissingException
+from app.exceptions import AuthorizedFailException
 
 logger = template_logging.getLogger(__name__)
 
@@ -27,9 +27,9 @@ def user_define_validator_handler(user_info: Any, jwt_obj: Dict[str, Any]):
         raise AuthorizedFailException()
     # 校验数据的完整性
     if not user_info or not user_info.get('username'):
-        raise UserInfoMissingException()
+        raise AuthorizedFailException()
     if user_info['username'] != jwt_obj["data"]["username"]:
-        raise NoOwnershipException()
+        raise AuthorizedFailException()
 
 
 def get_user_info_handler(jwt_obj: Dict[str, Any]) -> Dict[str, Any]:

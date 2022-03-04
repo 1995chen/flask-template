@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
-# 自定义异常类，与code_map.py配合使用
+"""
+    自定义异常类，与code_map配合使用
+"""
 from app.constants.code_map import CODE_MAP
 
 __all__ = [
@@ -27,7 +29,7 @@ class ClientException(CommonException):
 
     def __init__(self, message=''):
         super().__init__()
-        self.code = 4001
+        self.code = 40000
         self.message = message or CODE_MAP[self.code]
 
 
@@ -36,5 +38,5 @@ class ServerException(CommonException):
 
     def __init__(self, message=''):
         super().__init__()
-        self.code = 5001
+        self.code = 50000
         self.message = message or CODE_MAP[self.code]

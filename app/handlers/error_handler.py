@@ -195,9 +195,9 @@ class GlobalErrorHandler:
         """
         处理SSO异常
         """
-        code: int = exception.code or 40104
+        code: int = exception.code or 40100
         # 默认返回信息
-        message: str = str(CODE_MAP[40104])
+        message: str = str(CODE_MAP[40100])
         if isinstance(exception, template_exception.AuthorizedFailException):
             return response.error(code=code, message=message)
         if isinstance(exception, template_exception.UserResourceNotFoundException):

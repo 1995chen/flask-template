@@ -48,7 +48,7 @@ def success(message: Optional[str] = None, data: Any = None, status: int = 200, 
     return Response(json.dumps(res), status=status, headers=__get_response_header(), mimetype='application/json')
 
 
-def error(message: Optional[str] = None, data: Any = None, status: int = 400, code: int = 4001) -> Response:
+def error(message: Optional[str] = None, data: Any = None, status: int = 400, code: int = 40000) -> Response:
     """
     函数体捕获到已知客户端异常，请求流程由于缺失必要参数而无法继续执行
     """
@@ -63,7 +63,7 @@ def error(message: Optional[str] = None, data: Any = None, status: int = 400, co
     return Response(json.dumps(res), status=status, headers=__get_response_header(), mimetype='application/json')
 
 
-def exception(message: Optional[str] = None, status: int = 500, code: int = 5001) -> Response:
+def exception(message: Optional[str] = None, status: int = 500, code: int = 50000) -> Response:
     """
     函数体捕获到未知异常，请求流程未能正常结束
     """
@@ -75,7 +75,7 @@ def exception(message: Optional[str] = None, status: int = 500, code: int = 5001
     return Response(json.dumps(res), status=status, headers=__get_response_header(), mimetype='application/json')
 
 
-def page_not_found(message: Optional[str] = None, data: Any = None, status: int = 404, code: int = 4004) -> Response:
+def page_not_found(message: Optional[str] = None, data: Any = None, status: int = 404, code: int = 40400) -> Response:
     """
     函数体捕获到已知客户端异常，请求流程由于缺失必要参数而无法继续执行
     """
