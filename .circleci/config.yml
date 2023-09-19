@@ -36,7 +36,7 @@ jobs:
 
   run_unittest:
     docker:
-      - image: 1995chen/python:3.8.11
+      - image: 1995chen/python:3.8.11-latest
         auth:
           username: $DOCKER_USER
           password: $DOCKER_PASS
