@@ -1,4 +1,4 @@
-FROM 1995chen/python:3.6.8-dcf3637
+FROM 1995chen/python:3.8.11-latest
 MAINTAINER liang.chen
 
 # 拷贝配置文件
